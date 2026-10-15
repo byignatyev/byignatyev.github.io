@@ -355,8 +355,7 @@ st.innerHTML=st.textContent.split(' ').map(w=>`<span>${w}</span>`).join(' ');
 const words=[...st.children];
 function onStatement(){const r=st.getBoundingClientRect();const p=clamp((innerHeight*.85-r.top)/(r.height+innerHeight*.35),0,1);const k=RM?words.length:Math.round(p*words.length);words.forEach((w,i)=>w.classList.toggle('lit',i<k))}
 
-let ticking=false;
-function onScroll(){if(ticking)return;ticking=true;requestAnimationFrame(()=>{onNav();onScene();onStatement();ticking=false})}
+function onScroll(){onNav();onScene();onStatement()}
 addEventListener('scroll',onScroll,{passive:true});addEventListener('resize',onScroll);onNav();onScene();onStatement();
 
 /* reveal below the fold + count-up */
