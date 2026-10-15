@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Телеграм-боты, сайты и автоматизация для малого бизнеса за 1–3 дня.">
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Боты и сайты под ключ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Cormorant:ital,wght@1,500;1,600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: dark studio page; live node-network canvas behind a split hero (pitch + working bot), glass panels, scroll-revealed chapters */
+:root{
+  --bg:#faf8f3; --bg2:#f2eee5; --surface:#ffffff; --chat:#efeae0; --glass:rgba(255,255,255,.7); --glass-line:rgba(70,55,25,.12);
+  --ink:#1b1915; --muted:#5e5a51; --dim:#7a756a;
+  --gold:#d9b46a; --gold-ink:#8a5f17; --gold-soft:rgba(217,180,106,.22); --mine:#e4f0d8; --bubble:#ffffff;
+  --display:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --serif:"Cormorant",Georgia,serif;
+  --mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+  --ease:cubic-bezier(.2,.7,.2,1);
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:var(--display);font-size:17px;line-height:1.6;overflow-x:hidden}
+#net{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.glow{position:fixed;width:60vmax;height:60vmax;border-radius:50%;filter:blur(90px);opacity:.28;z-index:0;pointer-events:none;background:radial-gradient(circle,var(--gold),transparent 60%);top:-25vmax;right:-20vmax;animation:drift 18s ease-in-out infinite alternate}
+@keyframes drift{to{transform:translate(-14vmax,18vmax)}}
+.page{position:relative;z-index:1}
+.wrap{max-width:1140px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+h1,h2,h3{margin:0;text-wrap:balance;letter-spacing:-.025em}
+p{margin:0}
+em{font-family:var(--serif);font-style:italic;font-weight:600;color:var(--gold-ink);letter-spacing:0}
+.label{font-family:var(--mono);font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-ink)}
+
+/* nav */
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);background:rgba(250,248,243,.72);border-bottom:1px solid var(--glass-line)}
+nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:14px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:-.01em}
+.logo i{width:10px;height:10px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 0 var(--gold);animation:ping 2.4s infinite}
+@keyframes ping{0%{box-shadow:0 0 0 0 rgba(217,180,106,.6)}80%,100%{box-shadow:0 0 0 12px rgba(217,180,106,0)}}
+nav .links{display:flex;gap:28px;font-size:15px}
+nav a{color:var(--muted);text-decoration:none;transition:color .2s}
+nav a:hover{color:var(--ink)}
+
+/* buttons */
+.btn{position:relative;display:inline-flex;align-items:center;gap:10px;padding:16px 26px;border-radius:999px;background:var(--gold);color:#16130c;font:700 16px var(--display);text-decoration:none;border:0;cursor:pointer;overflow:hidden;transition:transform .35s var(--ease),box-shadow .35s var(--ease);will-change:transform}
+.btn::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.55) 50%,transparent 70%);transform:translateX(-120%);animation:shine 4.5s 1.5s infinite}
+@keyframes shine{0%,70%{transform:translateX(-120%)}100%{transform:translateX(120%)}}
+.btn:hover{box-shadow:0 12px 40px -8px rgba(217,180,106,.55)}
+.btn svg{transition:transform .3s var(--ease)}
+.btn:hover svg{transform:translateX(4px)}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--glass-line)}
+.btn.ghost::after{display:none}
+a:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offset:4px}
+
+/* hero */
+.hero{padding-block:72px 40px}
+.hero .wrap{display:grid;grid-template-columns:1.15fr .85fr;gap:56px;align-items:center}
+.hero .wrap>*{min-width:0}
+.pitch{display:grid;gap:26px}
+h1{font-size:clamp(36px,5.6vw,68px);font-weight:800;line-height:1.04}
+h1 .w{display:inline-block;animation:rise .9s var(--ease) both}
+h1 em{font-size:1.08em}
+@keyframes rise{from{transform:translateY(.5em);opacity:0;filter:blur(6px)}}
+.lead{font-size:19px;color:var(--muted);max-width:32em;animation:rise .9s .55s var(--ease) both}
+.cta-row{display:flex;flex-wrap:wrap;gap:12px;animation:rise .9s .7s var(--ease) both}
+.stats{display:grid;grid-template-columns:repeat(3,auto);justify-content:start;gap:12px 40px;padding-top:8px;animation:rise .9s .85s var(--ease) both}
+.stats b{display:block;font-size:30px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.stats span{font-size:14px;color:var(--dim)}
+
+/* phone */
+.phone-wrap{position:relative;animation:float-in 1.1s .3s var(--ease) both}
+@keyframes float-in{from{transform:translateY(40px) rotate(2deg);opacity:0}}
+.phone{position:relative;border-radius:30px;padding:10px;background:linear-gradient(160deg,#ffffff,#efe9dd);border:1px solid var(--glass-line);box-shadow:0 40px 100px -40px rgba(60,45,20,.45);transform-style:preserve-3d;transition:transform .5s var(--ease);max-width:400px;margin-left:auto}
+.screen{border-radius:22px;overflow:hidden;background:var(--chat);display:flex;flex-direction:column;height:520px}
+.bar{display:flex;align-items:center;gap:12px;padding:14px 16px;background:var(--surface);border-bottom:1px solid var(--glass-line)}
+.ava{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#e8c886,#9c7a3c);color:#16130c;font-weight:800}
+.bar small{display:block;font-size:12.5px;color:var(--gold-ink);font-family:var(--mono)}
+.msgs{flex:1;overflow-y:auto;padding:16px 14px;display:flex;flex-direction:column;gap:8px;scrollbar-width:none}
+.m{max-width:84%;padding:9px 13px;border-radius:16px 16px 16px 5px;background:var(--bubble);font-size:14.5px;line-height:1.45;white-space:pre-line;animation:pop .35s var(--ease) both;transform-origin:left bottom}
+.m.me{align-self:flex-end;background:var(--mine);border-radius:16px 16px 5px 16px;transform-origin:right bottom}
+@keyframes pop{from{transform:scale(.85) translateY(8px);opacity:0}}
+.typing{display:flex;gap:4px;padding:13px 15px;width:max-content}
+.typing span{width:6px;height:6px;border-radius:50%;background:var(--muted);animation:dot 1s infinite}
+.typing span:nth-child(2){animation-delay:.15s}.typing span:nth-child(3){animation-delay:.3s}
+@keyframes dot{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-4px);opacity:1}}
+.kb{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:10px;background:var(--surface);border-top:1px solid var(--glass-line);min-height:62px}
+.kb button{background:var(--bg);color:var(--ink);border:1px solid var(--glass-line);border-radius:12px;padding:10px 6px;font:600 14px var(--display);cursor:pointer;transition:background .2s,border-color .2s,transform .15s;animation:pop .3s var(--ease) both}
+.kb button:hover{background:var(--gold-soft);border-color:var(--gold-ink)}
+.kb button:active{transform:scale(.96)}
+.toast{position:absolute;left:-28px;bottom:70px;display:flex;gap:10px;align-items:center;padding:12px 16px;border-radius:16px;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--glass-line);font-size:13.5px;box-shadow:0 20px 50px -18px rgba(60,45,20,.35);transform:translateY(20px);opacity:0;transition:all .5s var(--ease);pointer-events:none;max-width:240px}
+.toast.show{transform:none;opacity:1}
+.toast b{display:block;color:var(--gold-ink);font-size:12px;font-family:var(--mono);font-weight:500}
+.hint{margin-top:16px;font-size:13.5px;color:var(--dim);text-align:right;max-width:400px;margin-left:auto}
+
+/* ticker */
+.ticker{border-block:1px solid var(--glass-line);padding-block:20px;overflow:hidden;margin-top:56px;mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent)}
+.track{display:flex;gap:48px;width:max-content;animation:scroll 40s linear infinite;font-size:18px;color:var(--muted);white-space:nowrap}
+.track span::before{content:"✦";color:var(--gold-ink);margin-right:48px;font-size:12px;vertical-align:middle}
+@keyframes scroll{to{transform:translateX(-50%)}}
+
+/* sections */
+section.block{padding-block:110px 0}
+.head{display:grid;gap:14px;margin-bottom:48px;max-width:720px}
+h2{font-size:clamp(30px,4.2vw,50px);font-weight:800;line-height:1.08}
+
+.services{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.card{position:relative;padding:32px;border-radius:24px;background:var(--glass);box-shadow:0 1px 2px rgba(60,45,20,.05);border:1px solid var(--glass-line);overflow:hidden;display:grid;gap:14px;align-content:start;transition:transform .5s var(--ease),border-color .3s}
+.card::before{content:"";position:absolute;inset:0;background:radial-gradient(420px circle at var(--x,50%) var(--y,-20%),rgba(217,180,106,.14),transparent 45%);opacity:0;transition:opacity .4s;pointer-events:none}
+.card:hover::before{opacity:1}
+.card:hover{border-color:rgba(217,180,106,.35)}
+.card .ico{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;background:var(--gold-soft);color:var(--gold-ink)}
+.card h3{font-size:23px;font-weight:700}
+.card .price{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.card .price b{font-size:28px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.card .price span{font-family:var(--mono);font-size:13px;color:var(--dim)}
+.card ul{list-style:none;padding:0;margin:0;display:grid;gap:8px;color:var(--muted);font-size:15.5px}
+.card li{display:flex;gap:10px}
+.card li::before{content:"";flex:none;width:6px;height:6px;margin-top:10px;border-radius:50%;background:var(--gold)}
+
+/* steps */
+.steps{position:relative;list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:24px}
+.steps::before{content:"";position:absolute;top:22px;left:0;right:0;height:1px;background:var(--glass-line)}
+.steps::after{content:"";position:absolute;top:22px;left:0;height:1px;width:calc(var(--p,0)*100%);background:linear-gradient(90deg,var(--gold),#f3dca8);box-shadow:0 0 12px var(--gold);transition:width .2s linear}
+.steps li{position:relative;display:grid;gap:10px;align-content:start}
+.steps .n{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--bg2);border:1px solid var(--glass-line);font-family:var(--mono);font-size:14px;color:var(--muted);position:relative;z-index:1;transition:all .4s var(--ease)}
+.steps li.on .n{border-color:var(--gold-ink);color:#16130c;background:var(--gold);box-shadow:0 0 0 6px var(--gold-soft)}
+.steps h3{font-size:18px;font-weight:700}
+.steps p{font-size:15px;color:var(--muted)}
+
+/* cases */
+.cases{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.case{padding:32px;border-radius:24px;border:1px solid var(--glass-line);background:var(--surface);display:grid;gap:16px;align-content:start}
+.case h3{font-size:22px;font-weight:700}
+.case p{color:var(--muted)}
+.log{font-family:var(--mono);font-size:13px;line-height:1.9;background:var(--bg2);border:1px solid var(--glass-line);border-radius:14px;padding:16px 18px;color:var(--muted);overflow-x:auto;white-space:nowrap}
+.log .t{color:var(--dim)}
+.log .ok{color:#2f7d38}
+.log .g{color:var(--gold-ink)}
+.res{display:flex;gap:10px;align-items:center;font-weight:600}
+.res svg{flex:none;color:var(--gold-ink)}
+
+/* final */
+.final{padding-block:110px 90px}
+.final .box{position:relative;border-radius:32px;padding:clamp(32px,6vw,72px);overflow:hidden;border:1px solid rgba(217,180,106,.3);background:radial-gradient(800px circle at 0% 0%,rgba(217,180,106,.18),transparent 55%),var(--surface);display:grid;gap:22px}
+.final h2{max-width:14em}
+.final p{color:var(--muted);max-width:36em;font-size:18px}
+.final .orb{position:absolute;right:-80px;bottom:-80px;width:320px;height:320px;border-radius:50%;border:1px solid rgba(217,180,106,.25);animation:spin 30s linear infinite}
+.final .orb::before{content:"";position:absolute;top:-6px;left:50%;width:12px;height:12px;border-radius:50%;background:var(--gold);box-shadow:0 0 20px var(--gold)}
+.final .orb.b{width:220px;height:220px;right:-30px;bottom:-30px;animation-duration:20s;animation-direction:reverse}
+@keyframes spin{to{transform:rotate(360deg)}}
+footer{padding-block:28px;border-top:1px solid var(--glass-line);color:var(--dim);font-size:14px}
+
+/* reveal (JS adds .rv only to elements below the fold) */
+.rv{transition:transform 1s var(--ease),opacity 1s var(--ease)}
+.rv.pre{transform:translateY(40px);opacity:.15}
+
+@media (max-width:900px){
+  nav .links{display:none}
+  .hero .wrap{grid-template-columns:1fr;gap:48px}
+  .phone,.hint{margin-left:0;margin-right:auto;text-align:left}
+  .toast{left:auto;right:-8px}
+  .steps{grid-template-columns:1fr;gap:28px}
+  .steps::before,.steps::after{top:0;bottom:0;left:22px;right:auto;width:1px;height:auto}
+  .steps::after{height:calc(var(--p,0)*100%);width:1px}
+  .steps li{grid-template-columns:44px 1fr;column-gap:18px}
+  .steps li .n{grid-row:span 2}
+}
+@media (max-width:640px){
+  .services,.cases{grid-template-columns:1fr}
+  .card,.case{padding:24px}
+  .stats{gap:12px 24px}
+  .stats b{font-size:24px}
+  section.block{padding-block:80px 0}
+  .screen{height:480px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .rv{transform:none;opacity:1}
+}
+</style>
+</head>
+<body>
+
+<canvas id="net" aria-hidden="true"></canvas>
+<div class="glow" aria-hidden="true"></div>
+
+<div class="page">
+  <nav>
+    <div class="wrap">
+      <div class="logo"><i></i>Боты · сайты · автоматизация</div>
+      <div class="links"><a href="#services">Услуги</a><a href="#process">Как работаем</a><a href="#cases">Работы</a><a href="#contact">Связаться</a></div>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="wrap">
+      <div class="pitch">
+        <span class="label">Для малого бизнеса</span>
+        <h1 id="h1">Рутину берёт бот. <em>Клиенты</em> остаются вам.</h1>
+        <p class="lead">Делаю Телеграм-ботов, сайты и автоматизацию: запись клиентов, приём заявок, посты в канал, отчёты из таблиц. Под ключ за 1–3 дня.</p>
+        <div class="cta-row">
+          <a class="btn mag" href="#contact">Обсудить задачу <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <a class="btn ghost" href="#services">Услуги и цены</a>
+        </div>
+        <div class="stats">
+          <div><b data-count="3" data-pre="1–">1–3</b><span>дня на проект</span></div>
+          <div><b data-count="50" data-suf="%">50%</b><span>предоплата</span></div>
+          <div><b data-count="7" data-suf=" дней">7 дней</b><span>правки бесплатно</span></div>
+        </div>
+      </div>
+
+      <div class="phone-wrap">
+        <div class="phone" id="phone">
+          <div class="screen" aria-label="Пример бота записи">
+            <div class="bar"><div class="ava">С</div><div><b>Студия «Сирень»</b><small id="status">бот · онлайн</small></div></div>
+            <div class="msgs" id="msgs" aria-live="polite"></div>
+            <div class="kb" id="kb"></div>
+          </div>
+        </div>
+        <div class="toast" id="toast"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" style="color:var(--gold-ink);flex:none"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><div><b>ВЛАДЕЛЬЦУ</b>Новая запись: <span id="toast-t">маникюр, завтра 14:30</span></div></div>
+        <p class="hint">Это рабочий пример — нажимайте кнопки.</p>
+      </div>
+    </div>
+    <div class="ticker" aria-hidden="true"><div class="track" id="track"></div></div>
+  </header>
+
+  <section class="block" id="services">
+    <div class="wrap">
+      <div class="head rv"><span class="label">Услуги</span><h2>Что сделаю для вашего <em>бизнеса</em></h2></div>
+      <div class="services">
+        <article class="card rv">
+          <div class="ico"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 8V4M9 14h.01M15 14h.01"/></svg></div>
+          <h3>Телеграм-бот</h3>
+          <div class="price"><b>от 15 000 ₽</b><span>1–3 дня</span></div>
+          <ul><li>Запись на услуги и напоминания клиентам</li><li>Приём заявок, ответы на частые вопросы</li><li>Каталог, корзина и оплата</li><li>Каждая заявка сразу приходит вам</li></ul>
+        </article>
+        <article class="card rv">
+          <div class="ico"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 14h8"/></svg></div>
+          <h3>Сайт-лендинг</h3>
+          <div class="price"><b>от 15 000 ₽</b><span>1–2 дня</span></div>
+          <ul><li>Услуги, цены, отзывы и контакты на одной странице</li><li>Форма заявки с уведомлением в Телеграм</li><li>Удобно смотреть с телефона</li><li>Помогу с доменом и размещением</li></ul>
+        </article>
+        <article class="card rv">
+          <div class="ico"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 3 3 10l7 3 3 7z"/><path d="m10 13 4-4"/></svg></div>
+          <h3>Автопостинг в канал</h3>
+          <div class="price"><b>от 10 000 ₽</b><span>1–2 дня</span></div>
+          <ul><li>Контент-план на месяц под вашу тему</li><li>Посты выходят сами по расписанию</li><li>Тему каждого поста можно согласовать заранее</li></ul>
+        </article>
+        <article class="card rv">
+          <div class="ico"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></div>
+          <h3>Отчёты и таблицы</h3>
+          <div class="price"><b>от 15 000 ₽</b><span>1–2 дня</span></div>
+          <ul><li>Сводка по продажам и заявкам каждый день в Телеграм</li><li>Сбор данных из Excel и Google-таблиц</li><li>Документы по шаблону заполняются сами</li></ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="process">
+    <div class="wrap">
+      <div class="head rv"><span class="label">Процесс</span><h2>От сообщения до готового — <em>пять шагов</em></h2></div>
+      <ol class="steps" id="steps">
+        <li><span class="n">01</span><h3>Задача</h3><p>Пишете в Телеграм, что нужно. Хватит пары предложений.</p></li>
+        <li><span class="n">02</span><h3>Смета</h3><p>В тот же день присылаю, что сделаю, срок и цену.</p></li>
+        <li><span class="n">03</span><h3>Предоплата</h3><p>50% — и работа начинается.</p></li>
+        <li><span class="n">04</span><h3>Сдача</h3><p>Через 1–3 дня показываю готовое, вы проверяете.</p></li>
+        <li><span class="n">05</span><h3>Правки</h3><p>7 дней бесплатных доработок, затем остаток оплаты.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="block" id="cases">
+    <div class="wrap">
+      <div class="head rv"><span class="label">Работы</span><h2>Уже работает <em>каждый день</em></h2></div>
+      <div class="cases">
+        <div class="case rv">
+          <span class="label">Строительная компания</span>
+          <h3>Автопостинг в Телеграм-канал</h3>
+          <p>Посты готовятся по контент-плану и выходят по расписанию. Тема заранее приходит на согласование.</p>
+          <div class="log"><span class="t">09:00</span> тема на согласование <span class="g">→ одобрено</span><br><span class="t">11:00</span> пост опубликован <span class="ok">✓</span><br><span class="t">завтра</span> следующая тема в очереди</div>
+          <div class="res"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Канал живёт каждый день, ведение — пара минут</div>
+        </div>
+        <div class="case rv">
+          <span class="label">Офис компании</span>
+          <h3>Ежедневный отчёт в боте</h3>
+          <p>Бот собирает данные за день и к концу рабочего дня присылает готовый черновик отчёта для руководителя.</p>
+          <div class="log"><span class="t">16:50</span> данные за день собраны <span class="ok">✓</span><br><span class="t">16:50</span> черновик отчёта <span class="g">→ в Телеграм</span><br><span class="t">16:55</span> отправлено руководителю <span class="ok">✓</span></div>
+          <div class="res"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Отчёт больше не собирается вручную</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="final" id="contact">
+    <div class="wrap">
+      <div class="box rv">
+        <div class="orb" aria-hidden="true"></div><div class="orb b" aria-hidden="true"></div>
+        <span class="label">Связаться</span>
+        <h2>Расскажите, что хотите <em>упростить</em></h2>
+        <p>Напишите в Телеграм, чем занимаетесь и какая задача отнимает время. Отвечу в течение часа и пришлю смету в тот же день.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer><div class="wrap">Телеграм-боты, сайты и автоматизация для малого бизнеса</div></footer>
+</div>
+
+<script>
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* hero headline: split into words with staggered rise */
+(()=>{const h=document.getElementById('h1');let i=0;
+  [...h.childNodes].forEach(n=>{
+    if(n.nodeType===3){const f=document.createDocumentFragment();n.textContent.split(/(\s+)/).forEach(t=>{if(!t)return;if(/^\s+$/.test(t)){f.append(t);return}const s=document.createElement('span');s.className='w';s.style.animationDelay=(i++*70)+'ms';s.textContent=t;f.append(s)});n.replaceWith(f)}
+    else{n.classList.add('w');n.style.animationDelay=(i++*70)+'ms'}
+  });
+})();
+
+/* ticker */
+(()=>{const items=['Запись клиентов','Напоминания о визите','Приём заявок','Автопостинг','Отчёты в Телеграм','Оплата в боте','Лендинги','Google-таблицы','Каталог и корзина','Уведомления владельцу'];
+  document.getElementById('track').innerHTML=[...items,...items].map(t=>`<span>${t}</span>`).join('');})();
+
+/* node network background */
+(()=>{const c=document.getElementById('net'),x=c.getContext('2d');let W,H,P=[],mx=-999,my=-999;
+  function size(){W=c.width=innerWidth*devicePixelRatio;H=c.height=innerHeight*devicePixelRatio;const n=Math.min(70,Math.round(innerWidth*innerHeight/22000));P=Array.from({length:n},()=>({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.25*devicePixelRatio,vy:(Math.random()-.5)*.25*devicePixelRatio}))}
+  size();addEventListener('resize',size);addEventListener('pointermove',e=>{mx=e.clientX*devicePixelRatio;my=e.clientY*devicePixelRatio});
+  const D=140*devicePixelRatio;
+  function frame(){x.clearRect(0,0,W,H);
+    for(const p of P){p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>W)p.vx*=-1;if(p.y<0||p.y>H)p.vy*=-1}
+    for(let i=0;i<P.length;i++){const a=P[i];
+      for(let j=i+1;j<P.length;j++){const b=P[j],d=Math.hypot(a.x-b.x,a.y-b.y);if(d<D){x.strokeStyle=`rgba(176,132,52,${(1-d/D)*.28})`;x.lineWidth=devicePixelRatio;x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.stroke()}}
+      const dm=Math.hypot(a.x-mx,a.y-my);if(dm<D*1.4){x.strokeStyle=`rgba(217,180,106,${(1-dm/(D*1.4))*.45})`;x.beginPath();x.moveTo(a.x,a.y);x.lineTo(mx,my);x.stroke()}
+      x.fillStyle='rgba(60,50,30,.35)';x.beginPath();x.arc(a.x,a.y,1.4*devicePixelRatio,0,7);x.fill()}
+    if(!RM)requestAnimationFrame(frame)}
+  frame();})();
+
+/* bot demo with typing indicator */
+(()=>{const msgs=document.getElementById('msgs'),kb=document.getElementById('kb'),st=document.getElementById('status'),toast=document.getElementById('toast'),tt=document.getElementById('toast-t');
+  let pick={};
+  const flow={
+    start:{t:'Здравствуйте! Я бот студии «Сирень». Запишу вас к мастеру за минуту.',b:[['Записаться','svc'],['Цены','price'],['Адрес','addr'],['Вопрос мастеру','q']]},
+    price:{t:'Маникюр — 1 800 ₽\nГель-лак — 2 300 ₽\nСтрижка — 1 500 ₽',b:[['Записаться','svc'],['В начало','start']]},
+    addr:{t:'ул. Первомайская, 12\nКаждый день с 10:00 до 21:00',b:[['Записаться','svc'],['В начало','start']]},
+    q:{t:'Напишите вопрос — мастер ответит здесь же в течение часа.',b:[['Записаться','svc'],['В начало','start']]},
+    svc:{t:'Выберите услугу:',b:[['Маникюр','day','s'],['Гель-лак','day','s'],['Стрижка','day','s']]},
+    day:{t:'Выберите день:',b:[['Завтра','time','d'],['Послезавтра','time','d'],['Суббота','time','d']]},
+    time:{t:'Свободное время:',b:[['11:00','ok','h'],['14:30','ok','h'],['18:00','ok','h']]},
+    ok:{t:()=>`Готово! Вы записаны: ${pick.s.toLowerCase()}, ${pick.d.toLowerCase()} в ${pick.h}.\nНапомню за 2 часа до визита.`,b:[['Записаться ещё','svc'],['В начало','start']],after:()=>{tt.textContent=`${pick.s.toLowerCase()}, ${pick.d.toLowerCase()} ${pick.h}`;toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),3800)}}
+  };
+  const scroll=()=>msgs.scrollTop=msgs.scrollHeight;
+  function add(text,me){const d=document.createElement('div');d.className='m'+(me?' me':'');d.textContent=text;msgs.append(d);scroll()}
+  function show(k){const s=flow[k];const ty=document.createElement('div');ty.className='m typing';ty.innerHTML='<span></span><span></span><span></span>';msgs.append(ty);scroll();st.textContent='печатает…';
+    setTimeout(()=>{ty.remove();st.textContent='бот · онлайн';add(typeof s.t==='function'?s.t():s.t);
+      kb.innerHTML='';s.b.forEach(([l,n,key],i)=>{const b=document.createElement('button');b.type='button';b.textContent=l;b.style.animationDelay=i*50+'ms';b.onclick=()=>{if(key)pick[key]=l;add(l,true);kb.innerHTML='';setTimeout(()=>show(n),250)};kb.append(b)});
+      s.after&&s.after()},RM?0:700)}
+  add('/start',true);show('start');
+
+  /* tilt phone toward pointer */
+  const ph=document.getElementById('phone');
+  if(!RM&&matchMedia('(pointer:fine)').matches){ph.parentElement.addEventListener('pointermove',e=>{const r=ph.getBoundingClientRect(),px=(e.clientX-r.left)/r.width-.5,py=(e.clientY-r.top)/r.height-.5;ph.style.transform=`perspective(900px) rotateY(${px*8}deg) rotateX(${-py*8}deg)`});ph.parentElement.addEventListener('pointerleave',()=>ph.style.transform='')}
+})();
+
+/* card spotlight */
+document.querySelectorAll('.card').forEach(c=>c.addEventListener('pointermove',e=>{const r=c.getBoundingClientRect();c.style.setProperty('--x',e.clientX-r.left+'px');c.style.setProperty('--y',e.clientY-r.top+'px')}));
+
+/* magnetic button */
+if(!RM&&matchMedia('(pointer:fine)').matches)document.querySelectorAll('.mag').forEach(b=>{b.addEventListener('pointermove',e=>{const r=b.getBoundingClientRect();b.style.transform=`translate(${(e.clientX-r.left-r.width/2)*.18}px,${(e.clientY-r.top-r.height/2)*.3}px)`});b.addEventListener('pointerleave',()=>b.style.transform='')});
+
+/* count-up stats */
+if(!RM)document.querySelectorAll('[data-count]').forEach(el=>{const to=+el.dataset.count,pre=el.dataset.pre||'',suf=el.dataset.suf||'';const t0=performance.now()+900;
+  (function f(t){const k=Math.min(1,Math.max(0,(t-t0)/1100)),e=1-Math.pow(1-k,3);el.textContent=pre+Math.max(1,Math.round(to*e))+suf;if(k<1)requestAnimationFrame(f)})(t0)});
+
+/* scroll reveal: only for elements below the first screen */
+(()=>{if(RM||!('IntersectionObserver'in window))return;
+  const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.remove('pre');io.unobserve(e.target)}}),{threshold:.15});
+  document.querySelectorAll('.rv').forEach((el,i)=>{if(el.getBoundingClientRect().top>innerHeight*.9){el.classList.add('pre');el.style.transitionDelay=(el.classList.contains('card')||el.classList.contains('case')?(i%2)*120:0)+'ms';io.observe(el)}});
+})();
+
+/* process line fills with scroll */
+(()=>{const s=document.getElementById('steps'),li=[...s.children];
+  function u(){const r=s.getBoundingClientRect(),vh=innerHeight,p=Math.min(1,Math.max(0,(vh*.75-r.top)/(r.height+vh*.25)));s.style.setProperty('--p',RM?1:p);li.forEach((l,i)=>l.classList.toggle('on',RM||p>=i/(li.length-1)-.02))}
+  addEventListener('scroll',u,{passive:true});addEventListener('resize',u);u();})();
+</script>
+</body>
+</html>
