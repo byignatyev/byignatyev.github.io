@@ -199,6 +199,10 @@ section.s{padding-block:120px 0}
 .f-msg{min-height:1.4em;font-size:15px;text-align:center;color:var(--muted)}
 .f-msg.ok{color:#1d8a3a;font-weight:500}.f-msg.err{color:#e30000}
 .or{font-size:14px;color:var(--faint)}
+.payinfo{font-size:14px!important;color:var(--faint)!important;max-width:34em!important;line-height:1.5}
+.foot{display:flex;flex-wrap:wrap;gap:6px 24px;justify-content:space-between}
+.foot a{color:var(--muted)}
+.foot a:hover{text-decoration:underline}
 .tg-link{display:inline-flex;align-items:center;gap:8px;font-size:17px;font-weight:500;min-height:44px}
 .tg-link:hover{text-decoration:underline}
 .pill.big{font-size:19px;padding:16px 30px;gap:10px;min-height:56px}
@@ -360,10 +364,11 @@ footer{background:var(--tile);color:var(--faint);font-size:12px;padding-block:20
     <button class="pill big press" type="submit" id="f-btn">Отправить заявку</button>
     <p class="f-msg" id="f-msg" role="status"></p>
   </form>
+  <p class="payinfo rv">Оплата картой или через СБП по ссылке — после согласования сметы. Предоплата 50%, чек самозанятого после каждой оплаты. <a href="oferta.html">Договор-оферта</a></p>
   <div class="rv cta-tg"><span class="or">или напишите сразу</span><a class="tg-link" href="https://t.me/avignatyevv" target="_blank" rel="noopener"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.5 4.3 2.9 11.5c-1.3.5-1.3 1.2-.2 1.6l4.8 1.5 1.8 5.6c.2.6.4.8.9.8.4 0 .6-.2.9-.5l2.3-2.2 4.7 3.5c.9.5 1.5.2 1.7-.8l3.1-14.6c.3-1.3-.5-1.9-1.4-1.6z"/></svg>@avignatyevv в Телеграме</a></div>
 </section>
 
-<footer><div class="wrap">byignatyev · Телеграм-боты для компаний: тендеры, заявки, отчёты · Телеграм: @avignatyevv</div></footer>
+<footer><div class="wrap foot">byignatyev · Телеграм-боты для компаний: тендеры, заявки, отчёты · Телеграм: @avignatyevv<span>Игнатьев А. В., самозанятый · <a href="oferta.html">Договор-оферта</a></span></div></footer>
 
 <script>
 const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
